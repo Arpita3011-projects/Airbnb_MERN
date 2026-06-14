@@ -8,6 +8,8 @@ const ejsMate=require("ejs-mate");
 const wrapAsync=require("./utils/wrapAsync.js");
 const ExpressError=require("./utils/ExpressError.js");
 const {listingSchema} = require("./views/listings/schema.js");
+const Review=require("./models/review.js");
+const {reviewSchema} = require("./views/listings/schema.js");
 
 
 
@@ -33,23 +35,31 @@ app.get("/",(req,res)=>{
 });
 
 const validateListing=(req,res,next)=>{
-let {error} = listingSchema.validate(req.body);
-    if(error){
-        let errmsg=error.details.map((el)=>{
-           el.message.jppin(",");
-        });
-        throw new ExpressError(400,errmsg);
+    const { error } = listingSchema.validate(req.body);
+    if (error) {
+        const errmsg = error.details.map(el => el.message).join(",");
+        throw new ExpressError(400, errmsg);
+    } else {
+        next();
+    }
+}
+
+const validateReview=(req,res,next)=>{
+    const {error} =reviewSchema.validate(req.body);
+    if (error){
+        const errmsg = error.details.map(el => el.message).join(",");
+        throw new ExpressError(400, errmsg);
     }else{
         next();
     }
 }
 
 //index route - create a route to show all listings
-app.get("/listings", wrapAsync(async (req,res)=>{
+app.get("/listings", wrapAsync(async(req,res)=>{
     try {
-        const allListings = await Listing.find({});
+        const allListings=await Listing.find({});
         res.render("listings/index",{allListings});
-    } catch (err) {
+    } catch(err) {
         console.log(err);
         res.status(500).send("Error fetching listings");
     }
@@ -65,7 +75,7 @@ app.get("/listings/new", (req,res)=>{
 //show route - create a route to show a single listing
 app.get("/listings/:id", wrapAsync(async (req,res)=>{//wrapAsync is a function that takes a function as an argument and returns a new function that catches any error thrown by the original function and passes it to the next middleware which is the error handling middleware
      let {id} = req.params;
-     const listing= await Listing.findById(id);
+     const listing= await Listing.findById(id).populate("reviews");
      res.render("listings/show.ejs",{listing});
 }));
 
@@ -108,6 +118,30 @@ let deletedListing=await Listing.findByIdAndDelete(id);
 console.log(deletedListing);
 res.redirect("/listings");
 }));
+
+
+//reviews-post route - create a route to add a review to a listing and save it to the database and redirects to the show page of the listing
+app.post("/listings/:id/reviews",validateReview,wrapAsync(async(req,res,next)=>{
+    let listing = await Listing.findById(req.params.id); //wrapAsync is a function that takes a function as an argument and returns a new function that catches any error thrown by the original function and passes it to the next middleware which is the error handling middleware
+    let newReview = new Review(req.body.review);
+    listing.reviews.push(newReview);
+    // save listing and review
+    await listing.save();
+    await newReview.save();
+    console.log("new Review saved");
+    return res.redirect(`/listings/${listing._id}`);
+}));
+
+//delete review 
+app.delete("/listings/:id/reviews/:reviewId",wrapAsync(async(req,res,next)=>{
+    let {id,reviewId}=req.params;
+   await Listing. findByIdAndUpdate(id,{$pull:{reviews:reviewId}});  //pull removes the id from review array
+  await  Review.findByIdAndDelete(reviewId);
+  res.redirect(`/listings/${id}`);
+}))
+    
+
+
 
 // app.get("/testListing", async(req,res)=>{
 //     let sampleListing=new Listing({

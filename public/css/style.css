@@ -58,7 +58,7 @@ text-decoration: underline;
     align-items:space-evenly;
     flex-direction: column;
 }
-.cards{
+.listing-cards{
     border:none !important;
     margin-bottom:2rem;
 
