@@ -1,7 +1,7 @@
 const express=require("express");
 const app=express(); //creating server using express
 const mongoose=require("mongoose"); //connects mongodb with node.js
-const Listing = require("./models/listing.js");
+const Listing = require("./models/listing.js");  
 const path=require("path");
 const methodOverride=require("method-override");
 const ejsMate=require("ejs-mate");
@@ -10,6 +10,9 @@ const ExpressError=require("./utils/ExpressError.js");
 const {listingSchema} = require("./views/listings/schema.js");
 const Review=require("./models/review.js");
 const {reviewSchema} = require("./views/listings/schema.js");
+const listings=require("./routes/listing.js");
+const reviews=require("./routes/review.js");
+
 
 
 
@@ -34,15 +37,7 @@ app.get("/",(req,res)=>{
     res.send("Hi iam Root");
 });
 
-const validateListing=(req,res,next)=>{
-    const { error } = listingSchema.validate(req.body);
-    if (error) {
-        const errmsg = error.details.map(el => el.message).join(",");
-        throw new ExpressError(400, errmsg);
-    } else {
-        next();
-    }
-}
+
 
 const validateReview=(req,res,next)=>{
     const {error} =reviewSchema.validate(req.body);
@@ -54,107 +49,13 @@ const validateReview=(req,res,next)=>{
     }
 }
 
-//index route - create a route to show all listings
-app.get("/listings", wrapAsync(async(req,res)=>{
-    try {
-        const allListings=await Listing.find({});
-        res.render("listings/index",{allListings});
-    } catch(err) {
-        console.log(err);
-        res.status(500).send("Error fetching listings");
-    }
-}));
 
-
-//new route - create a route to show a form to create a new listing
-app.get("/listings/new", (req,res)=>{
-    res.render("listings/new.ejs");
-});
-
-
-//show route - create a route to show a single listing
-app.get("/listings/:id", wrapAsync(async (req,res)=>{//wrapAsync is a function that takes a function as an argument and returns a new function that catches any error thrown by the original function and passes it to the next middleware which is the error handling middleware
-     let {id} = req.params;
-     const listing= await Listing.findById(id).populate("reviews");
-     res.render("listings/show.ejs",{listing});
-}));
-
-//create route - create a route to create a new listing and save it to the database
-app.post("/listings",validateListing,wrapAsync(async(req,res,next)=>{
-    
-    if(!req.body.listing){
-        throw new ExpressError(400,"Invalid Listing Data");
-    }    // const price = req.body.listing?.price;
-        // if (price !== undefined && price !== "" && isNaN(price)) {
-        //     throw new ExpressError(400, "Price must be a number");
-        // }
-        const newListing=new Listing(req.body.listing);//req.body.listing is the data from the form and Listing is the model we created
-        await newListing.save();
-        console.log(newListing);
-        res.redirect("/listings"); 
-}
-));
-
-
-//update route - create a route to update a listing ,saves the updated data to the database and redirects to the show page of the updated listing
-app.put("/listings/:id",validateListing,wrapAsync(async(req,res,next)=>{
-    let {id}=req.params;
-    await Listing.findByIdAndUpdate(id, req.body.listing);
-    res.redirect(`/listings/${id}`);
-}));
-
-
-//edit route - create a route to fetch the added daya from db and show a form to edit a listing
-app.get("/listings/:id/edit",wrapAsync(async(req,res)=>{
-let {id}=req.params;
-const listing= await Listing.findById(id);
-res.render("listings/edit.ejs",{listing}); //we are passing the listings to edit.ejs and it takes template , makes htm
-}));
-
-//delete route - create a route to delete a listing from the database and redirects to the index page
-app.delete("/listings/:id",wrapAsync(async(req,res,next)=>{
-let {id}=req.params;
-let deletedListing=await Listing.findByIdAndDelete(id);
-console.log(deletedListing);
-res.redirect("/listings");
-}));
-
-
-//reviews-post route - create a route to add a review to a listing and save it to the database and redirects to the show page of the listing
-app.post("/listings/:id/reviews",validateReview,wrapAsync(async(req,res,next)=>{
-    let listing = await Listing.findById(req.params.id); //wrapAsync is a function that takes a function as an argument and returns a new function that catches any error thrown by the original function and passes it to the next middleware which is the error handling middleware
-    let newReview = new Review(req.body.review);
-    listing.reviews.push(newReview);
-    // save listing and review
-    await listing.save();
-    await newReview.save();
-    console.log("new Review saved");
-    return res.redirect(`/listings/${listing._id}`);
-}));
-
-//delete review 
-app.delete("/listings/:id/reviews/:reviewId",wrapAsync(async(req,res,next)=>{
-    let {id,reviewId}=req.params;
-   await Listing. findByIdAndUpdate(id,{$pull:{reviews:reviewId}});  //pull removes the id from review array
-  await  Review.findByIdAndDelete(reviewId);
-  res.redirect(`/listings/${id}`);
-}))
-    
+    app.use("/listings",listings);
+    app.use("/listings/:id/reviews",reviews);
 
 
 
-// app.get("/testListing", async(req,res)=>{
-//     let sampleListing=new Listing({
-//         title:"My new villa",
-//         description:"my the beach",
-//         price:1200,
-//         location:"Calangute,goa",
-//         country:"india",
-//     });
-//     await sampleListing.save();
-//     console.log("sample was saved");
-//     res.send("successful testing");
-// });
+
 app.use((req,res,next)=>{//this middleware will match all the routes that are not defined above and it will throw an error with status code 404 and message "Page Not Found" and it will pass the error to the next middleware which is the error handling middleware
     next (new ExpressError(404, "Page Not Found"))
 });
