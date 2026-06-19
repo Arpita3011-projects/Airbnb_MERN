@@ -9,14 +9,15 @@ const Review=require("../models/review.js");
 
 
 
+
 const validateReview=(req,res,next)=>{
-    const {error} =reviewSchema.validate(req.body);
+    const {error}=reviewSchema.validate(req.body);
     if (error){
         const errmsg = error.details.map(el => el.message).join(",");
         throw new ExpressError(400, errmsg);
     }else{
         next();
-    }
+ }
 }
 
 router.post("/",validateReview,wrapAsync(async(req,res)=>{
