@@ -5,7 +5,7 @@
 <div class="container mt-5">
   <br>
   <h3>Create a New Listing</h3>
-  <% if (typeof error !== 'undefined') { %>
+  <% if (typeof error !== 'undefined' && error.length) { %>
     <div class="alert alert-danger"><%= error %></div>
   <% } %>
   <form method="POST" action="/listings"  novalidate class="needs-validation">
@@ -50,12 +50,12 @@
     <div class="mb-3 col-md-8">
       <label for="country" class="form-label">Country</label>
       <input id="country" name="listing[country]" value="<%= listingData.country || '' %>" class="form-control" placeholder="enter country" required>
-    </div>
-    <div class="invalid-feedback">
+      <div class="invalid-feedback">
         Please choose a country.
       </div>
       <div class="valid-feedback">
-      Looks good!
+        Looks good!
+      </div>
     </div>
     </div>
 
