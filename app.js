@@ -67,20 +67,21 @@ const sessionOptions={
   app.use((req,res,next)=>{
     res.locals.success=req.flash("success");
     res.locals.error=req.flash("error");
+    res.locals.currUser=req.user; // we cannot acces req object in ejs , so we are creating local object  so it can be used in ejs //navbar.ejs 
     next();
   });
 
 
 
-app.get("/demouser",async(req,res)=>{
-let fakeuser=new User({
-    email:"student1@gmail.com",
-    username:"student1"
-});
+// app.get("/demouser",async(req,res)=>{
+// let fakeuser=new User({
+//     email:"student1@gmail.com",
+//     username:"student1"
+// });
 
- let registeredUser=await User.register(fakeuser,"student@1"); // stores fakeuser in database with password
- res.send(registeredUser);
-});
+//  let registeredUser=await User.register(fakeuser,"student@1"); // stores fakeuser in database with password
+//  res.send(registeredUser);
+// });
 
 
 

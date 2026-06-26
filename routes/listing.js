@@ -5,7 +5,8 @@ const {listingSchema} = require("../views/listings/schema.js");
 const ExpressError=require("../utils/ExpressError.js");
 const Listing = require("../models/listing.js");
 const {reviewSchema} = require("../views/listings/schema.js");
-
+const passport=require("passport");
+const {isLoggedIn}=require("../middleware.js");
 
 
 
@@ -32,13 +33,14 @@ router.get("/", wrapAsync(async(req,res)=>{ // /listings is replaced by / becaus
 
 
 //new route - create a route to show a form to create a new listing
-router.get("/new", (req,res)=>{
+router.get("/new", isLoggedIn,(req,res)=>{
+  
     res.render("listings/new.ejs");
 });
 
 
 //show route - create a route to show a single listing
-router.get("/:id", wrapAsync(async (req,res)=>{//wrapAsync is a function that takes a function as an argument and returns a new function that catches any error thrown by the original function and passes it to the next middleware which is the error handling middleware
+router.get("/:id",wrapAsync(async (req,res)=>{//wrapAsync is a function that takes a function as an argument and returns a new function that catches any error thrown by the original function and passes it to the next middleware which is the error handling middleware
      let {id} = req.params;
      const listing= await Listing.findById(id).populate("reviews");
      if(!listing){
@@ -49,7 +51,7 @@ router.get("/:id", wrapAsync(async (req,res)=>{//wrapAsync is a function that ta
 }));
 
 //create route - create a route to create a new listing and save it to the database
-router.post("/",validateListing,wrapAsync(async(req,res,next)=>{
+router.post("/",isLoggedIn,validateListing,wrapAsync(async(req,res,next)=>{
     
     if(!req.body.listing){
         throw new ExpressError(400,"Invalid Listing Data");
@@ -67,7 +69,7 @@ router.post("/",validateListing,wrapAsync(async(req,res,next)=>{
 
 
 //update route - create a route to update a listing ,saves the updated data to the database and redirects to the show page of the updated listing
-router.put("/:id",validateListing,wrapAsync(async(req,res,next)=>{
+router.put("/:id",isLoggedIn,validateListing,wrapAsync(async(req,res,next)=>{
     let {id}=req.params;
     await Listing.findByIdAndUpdate(id, req.body.listing);
     req.flash("success", "Listing Updated!");
@@ -76,7 +78,7 @@ router.put("/:id",validateListing,wrapAsync(async(req,res,next)=>{
 
 
 //edit route - create a route to fetch the added daya from db and show a form to edit a listing
-router.get("/:id/edit",wrapAsync(async(req,res)=>{
+router.get("/:id/edit",isLoggedIn,wrapAsync(async(req,res)=>{
 let {id}=req.params;
 const listing= await Listing.findById(id);
 if(!listing){
@@ -87,7 +89,7 @@ res.render("listings/edit.ejs",{listing}); //we are passing the listings to edit
 }));
 
 //delete route - create a route to delete a listing from the database and redirects to the index page
-router.delete("/:id",wrapAsync(async(req,res,next)=>{
+router.delete("/:id",isLoggedIn,wrapAsync(async(req,res,next)=>{
 let {id}=req.params;
 let deletedListing=await Listing.findByIdAndDelete(id);
 console.log(deletedListing);
