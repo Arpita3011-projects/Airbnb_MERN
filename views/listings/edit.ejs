@@ -1,7 +1,7 @@
 <% layout("/layouts/boilerplate") %>
 <div class="row">
   <div class="col-8 offset-2">
-    <div class="container mt-5">
+    <div class="container mt-2">
     <br>
       <h3>Edit Listings</h3>
       <form method="POST" action="/listings/<%=listing._id%>?_method=PUT" novalidate class="needs-validation">
@@ -72,8 +72,6 @@
         Please choose a valid location.
       </div>
         </div>
-
-        
         <button class="btn btn-dark edit-btn mt-3 mb-3">Edit</button>
       </form>
     </div>
