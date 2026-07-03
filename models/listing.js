@@ -19,6 +19,21 @@ const listingSchema=new Schema({
             default:"listing.jpg"
         }
     },
+    geometry: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
+    },
+    // category:{
+    //     type:String,
+    //     enum:['Mountains','Arctic','Farms','desert'];
+    // }
     price:Number,
     location:String,
     country:String,

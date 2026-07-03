@@ -132,3 +132,18 @@ display:flex;
     padding-left:0;
     padding-right:0;
 }
+
+#map {
+    height: 400px;
+    width: 90%;
+    max-width: 800px;
+    margin: 1.5rem auto 2rem;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    z-index: 1;
+    display: block;
+}
+
+.center {
+    text-align: center;
+}

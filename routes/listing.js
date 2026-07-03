@@ -4,96 +4,40 @@ const wrapAsync=require("../utils/wrapAsync.js");
 const {listingSchema} = require("../views/listings/schema.js");
 const ExpressError=require("../utils/ExpressError.js");
 const Listing = require("../models/listing.js");
-const {reviewSchema} = require("../views/listings/schema.js");
 const passport=require("passport");
-const {isLoggedIn,isOwner,validateListing,validateReview}=require("../middleware.js");
+const {isLoggedIn,isOwner,validateListing}=require("../middleware.js");
+const listingController=require("../controllers/listing.js");
+const multer  = require('multer');
+const {storage}=require("../cloudconfig.js");
+const upload = multer({ storage });
 
 
+
+
+router.route("/")
 //index route - create a route to show all listings
-router.get("/", wrapAsync(async(req,res)=>{ // /listings is replaced by / because of router object usage cuz we defined listings usage in app.js and migrated listings to listings.js so no need to mention listings everywhere
-    try {
-        const allListings=await Listing.find({});
-        res.render("listings/index",{allListings});
-    } catch(err) {
-        console.log(err);
-        res.status(500).send("Error fetching listings");
-    }
-}));
+.get( wrapAsync(listingController.index))
+//create route - create a route to create a new listing and save it to the database
+.post(isLoggedIn,upload.single("listing[image]"),validateListing,wrapAsync(listingController.createListing));
+
 
 
 //new route - create a route to show a form to create a new listing
-router.get("/new", isLoggedIn,(req,res)=>{
-  
-    res.render("listings/new.ejs");
-});
+router.get("/new", isLoggedIn,listingController.rendernewForm);
 
 
+router.route("/:id")
 //show route - create a route to show a single listing
-router.get("/:id",wrapAsync(async (req,res)=>{//wrapAsync is a function that takes a function as an argument and returns a new function that catches any error thrown by the original function and passes it to the next middleware which is the error handling middleware
-     let {id} = req.params;
-     const listing= await Listing.findById(id).populate({path:"reviews",populate:{path:"author"}}).populate("owner");
-     if(!listing){
-         req.flash("error", "Listing not found!");
-         return res.redirect("/listings"); 
-     }
-     console.log(listing);
-     res.render("listings/show.ejs",{listing});
-}));
-
-//create route - create a route to create a new listing and save it to the database
-router.post("/",isLoggedIn,validateListing,wrapAsync(async(req,res,next)=>{
-    
-    if(!req.body.listing){
-        throw new ExpressError(400,"Invalid Listing Data");
-    }    // const price = req.body.listing?.price;
-        // if (price !== undefined && price !== "" && isNaN(price)) {
-        //     throw new ExpressError(400, "Price must be a number");
-        // }
-        const newListing=new Listing(req.body.listing);//req.body.listing is the data from the form and Listing is the model we created
-        console.log(req.user);
-        newListing.owner=req.user._id;
-        await newListing.save();
-        req.flash("success", "Successfully made a new listing!");
-        console.log(newListing);
-        res.redirect("/listings"); 
-}
-));
-
-
+.get(wrapAsync(listingController.showListing))
 //update route - create a route to update a listing ,saves the updated data to the database and redirects to the show page of the updated listing
-router.put("/:id",isLoggedIn,isOwner,validateListing,wrapAsync(async(req,res,next)=>{
-    let {id}=req.params;
-    let listing=await Listing.findById(id);
+.put(isLoggedIn,isOwner,upload.single("listing[image]"),validateListing,wrapAsync(listingController.renderupdatedListing))
+//delete route - create a route to delete a listing from the database and redirects to the index page
+.delete(isLoggedIn,isOwner,wrapAsync(listingController.renderdeleteListing));
 
-    await Listing.findByIdAndUpdate(id, req.body.listing);
-    req.flash("success", "Listing Updated!");
-    res.redirect(`/listings/${id}`);
-}));
 
 
 //edit route - create a route to fetch the added daya from db and show a form to edit a listing
-router.get("/:id/edit",isLoggedIn,isOwner,wrapAsync(async(req,res)=>{
-let {id}=req.params;
-const listing= await Listing.findById(id);
-if(!listing){
-         req.flash("error", "Listing not found!");
-         res.redirect("/listings"); 
-     }
-res.render("listings/edit.ejs",{listing}); //we are passing the listings to edit.ejs and it takes template , makes htm
-}));
-
-//delete route - create a route to delete a listing from the database and redirects to the index page
-router.delete("/:id",isLoggedIn,isOwner,wrapAsync(async(req,res,next)=>{
-let {id}=req.params;
-let deletedListing=await Listing.findByIdAndDelete(id);
-console.log(deletedListing);
-req.flash("success", "Listing Deleted!");
-res.redirect("/listings");
-}));
-
-
-
-
+router.get("/:id/edit",isLoggedIn,isOwner,wrapAsync(listingController.rendereditedListing));
 
 
 

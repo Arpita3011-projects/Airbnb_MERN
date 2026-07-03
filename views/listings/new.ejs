@@ -2,13 +2,13 @@
 <% const listingData = typeof listing !== 'undefined' ? listing : {}; %>
 <div class="row">
   <div class="col-8 offset-2">
-<div class="container mt-5">
+<div class="container mt-2">
   <br>
   <h3>Create a New Listing</h3>
   <% if (typeof error !== 'undefined' && error.length) { %>
     <div class="alert alert-danger"><%= error %></div>
   <% } %>
-  <form method="POST" action="/listings"  novalidate class="needs-validation">
+  <form method="POST" action="/listings"  novalidate class="needs-validation" enctype="multipart/form-data">
     <div class="mb-3">
       <label for="title" class="form-label">Title</label>
       <input id="title" name="listing[title]" value="<%= listingData.title || '' %>" class="form-control" placeholder="enter title" required>
@@ -31,9 +31,14 @@
       </div>
     </div>
 
-    <div class="mb-3">
+    <!-- <div class="mb-3">
       <label for="image" class="form-label">Image Link</label>
       <input id="image" name="listing[image][url]" value="<%= listingData.image?.url || '' %>" class="form-control" placeholder="enter image URL">
+    </div> -->
+
+    <div class="mb-3">
+      <label for="image" class="form-label">Upload Image</label>
+      <input id="image" type="file" name="listing[image]" class="form-control">
     </div>
 <div class="row">
     <div class="mb-3 col-md-4">
