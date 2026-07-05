@@ -29,9 +29,10 @@ const {MongoStore}=require('connect-mongo');
 const store = MongoStore.create({
     mongoUrl: process.env.ATLASDB_URL,
     touchAfter: 24 * 60 * 60,
-    secret: "process.env.SECRET",
+    secret: "mysupersecretcode",
 
 });
+
 
 
 
@@ -45,6 +46,10 @@ main().then((res) => {
     console.log(err);
 });
 
+
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("ATLASDB_URL exists:", !!process.env.ATLASDB_URL);
+console.log("Database URL:", dburl);
 async function main() {
     const dburl = process.env.ATLASDB_URL;
     if (!dburl) throw new Error('Missing ATLASDB_URL environment variable');
@@ -71,7 +76,8 @@ app.engine("ejs", ejsMate); //to use ejs mate as the template engine for our app
 app.use(express.static(path.join(__dirname, "public"))); //to serve static files from the public directory and we are using path.join to join the current directory with the public directory and it will give us the absolute path of the public directory and we are using express.static to serve the static files from the public directory
 const sessionOptions = {
     store,
-    secret: "process.env.SECRET",
+    secret: "mysupersecretcode",
+
     resave: false,
     saveUninitialized: true,
 
