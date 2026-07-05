@@ -23,13 +23,22 @@ const userRouter = require("./routes/user.js");
 const session = require("express-session");
 const flash = require("connect-flash");
 
+const {MongoStore}=require('connect-mongo');
+
+// Mongo-backed session store (Atlas)
+const store = MongoStore.create({
+    mongoUrl: process.env.ATLASDB_URL,
+    touchAfter: 24 * 60 * 60,
+    secret: "process.env.SECRET",
+
+});
+
+
+
 const passport = require("passport");
 const localStrategy = require("passport-local");
 const User = require("./models/user.js");
 
-
-
-const MONGO_URL = 'mongodb://127.0.0.1:27017/wonderlust';//search mongoosejs and copy connect link 
 main().then((res) => {
     console.log("connected to database");
 }).catch((err) => {
@@ -37,8 +46,23 @@ main().then((res) => {
 });
 
 async function main() {
-    await mongoose.connect(MONGO_URL);
+    const dburl = process.env.ATLASDB_URL;
+    if (!dburl) throw new Error('Missing ATLASDB_URL environment variable');
+
+    await mongoose.connect(dburl, {
+        serverSelectionTimeoutMS: 5000,
+    });
+
+    // Intentionally no console collection logging (hide collections from Atlas while developing)
+    // console.log('Connected DB name:', mongoose.connection.name);
+    // console.log('Listing model uses collection:', Listing.collection.name);
+    // const listingCount = await Listing.countDocuments({});
+    // console.log('Listings count:', listingCount);
+
+
+
 }
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true })); //to parse the form data from the request body
@@ -46,9 +70,11 @@ app.use(methodOverride("_method")); //to use method override in our app and we a
 app.engine("ejs", ejsMate); //to use ejs mate as the template engine for our app and it allows us to use layouts and partials in our ejs files
 app.use(express.static(path.join(__dirname, "public"))); //to serve static files from the public directory and we are using path.join to join the current directory with the public directory and it will give us the absolute path of the public directory and we are using express.static to serve the static files from the public directory
 const sessionOptions = {
-    secret: "mysupersecretcode",
+    store,
+    secret: "process.env.SECRET",
     resave: false,
     saveUninitialized: true,
+
     cookie: {
         expires: Date.now() + 7 * 24 * 60 * 60 * 1000,//7 days 24hrs 60 min 60 sec 1000ms + todays date= date which is after 1 week
         maxAge: 7 * 24 * 60 * 60 * 1000,
