@@ -41,12 +41,7 @@ const localStrategy = require("passport-local");
 const User = require("./models/user.js");
 
 const dburl = process.env.ATLASDB_URL;
-console.log("NODE_ENV:", process.env.NODE_ENV);
-console.log("ATLASDB_URL exists:", !!dburl);
-console.log(
-    "Database URL starts with:",
-    dburl ? dburl.substring(0, 20) + "..." : "undefined"
-);
+
 
 async function main() {
     if (!dburl) throw new Error('Missing ATLASDB_URL environment variable');
