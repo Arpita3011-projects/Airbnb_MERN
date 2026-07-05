@@ -40,18 +40,15 @@ const passport = require("passport");
 const localStrategy = require("passport-local");
 const User = require("./models/user.js");
 
-main().then((res) => {
-    console.log("connected to database");
-}).catch((err) => {
-    console.log(err);
-});
-
-
+const dburl = process.env.ATLASDB_URL;
 console.log("NODE_ENV:", process.env.NODE_ENV);
-console.log("ATLASDB_URL exists:", !!process.env.ATLASDB_URL);
-console.log("Database URL:", dburl);
+console.log("ATLASDB_URL exists:", !!dburl);
+console.log(
+    "Database URL starts with:",
+    dburl ? dburl.substring(0, 20) + "..." : "undefined"
+);
+
 async function main() {
-    const dburl = process.env.ATLASDB_URL;
     if (!dburl) throw new Error('Missing ATLASDB_URL environment variable');
 
     await mongoose.connect(dburl, {
