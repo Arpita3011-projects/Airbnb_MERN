@@ -106,16 +106,6 @@ app.use((req, res, next) => {
 
 
 
-// app.get("/demouser",async(req,res)=>{
-// let fakeuser=new User({
-//     email:"student1@gmail.com",
-//     username:"student1"
-// });
-
-//  let registeredUser=await User.register(fakeuser,"student@1"); // stores fakeuser in database with password
-//  res.send(registeredUser);
-// });
-
 
 app.get("/", (req, res) => {
     res.redirect("/listings");
