@@ -1,64 +1,148 @@
 <style>
-  @media (max-width: 768px) {
-
-    .navbar-nav {
-        text-align: center;
+    .navbar {
+        height: 5rem;
+        background-color: white;
     }
 
-    .navbar-nav .nav-link {
-        padding: 0.7rem 0;
+    .fa-compass {
+        color: #fe424d;
+        font-size: 2rem;
     }
 
-    .navbar form {
-        width: 100%;
-        margin: 10px 0;
-    }
-
-    .search-input {
-        width: 100%;
-        padding: 0.5rem 1rem;
+    .nav-link {
+        color: #222222 !important;
     }
 
     .search-btn {
-        white-space: nowrap;
+        background-color: #fe424d;
+        color: white;
+        border-radius: 25px;
+        padding: 0.5rem 1rem;
+        border: none;
     }
-}
+
+    .search-btn:hover {
+        background-color: #e63946;
+        color: white;
+    }
+
+    .search-btn i {
+        margin-right: 0.4rem;
+    }
+
+    .search-input {
+        border-radius: 25px;
+        padding: 0.5rem 1rem;
+        min-width: 250px;
+    }
+
+    @media (max-width: 768px) {
+
+        .navbar {
+            height: auto;
+            padding: 0.8rem;
+        }
+
+        .navbar-nav {
+            text-align: center;
+        }
+
+        .navbar-nav .nav-link {
+            padding: 0.6rem 0;
+        }
+
+        .search-form {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .search-input {
+            min-width: 0;
+            width: 100%;
+        }
+
+        .search-btn {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+    }
 </style>
 
+<nav class="navbar navbar-expand-md border-bottom sticky-top">
 
+    <div class="container-fluid">
 
+        <!-- Logo -->
+        <a class="navbar-brand" href="/listings">
+            <i class="fa-regular fa-compass"></i>
+        </a>
 
-<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <!-- Mobile Toggle -->
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
 
-    <!-- Left -->
-    <div class="navbar-nav">
-        <a class="nav-link" href="/listings">Explore</a>
-    </div>
+            <span class="navbar-toggler-icon"></span>
 
-    <!-- Center -->
-    <form class="d-flex mx-md-auto my-2 my-md-0" action="/listings" method="GET">
-        <input
-            class="form-control me-2 search-input"
-            type="search"
-            name="search"
-            placeholder="Search">
-        <button class="btn search-btn" type="submit">
-            <i class="fa-solid fa-magnifying-glass"></i>Search
         </button>
-    </form>
 
-    <!-- Right -->
-    <div class="navbar-nav ms-md-auto">
-        <a class="nav-link" href="/listings/new">Airbnb your home</a>
+        <!-- Navbar -->
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
 
-        <% const currUserSafe = (typeof currUser !== 'undefined') ? currUser : null; %>
+            <!-- Left -->
+            <div class="navbar-nav">
+                <a class="nav-link" href="/listings">Explore</a>
+            </div>
 
-        <% if (!currUserSafe) { %>
-            <a class="nav-link" href="/signup"><b>Sign Up</b></a>
-            <a class="nav-link" href="/login"><b>Log In</b></a>
-        <% } else { %>
-            <a class="nav-link" href="/logout"><b>Logout</b></a>
-        <% } %>
+            <!-- Center Search -->
+            <form class="d-flex mx-md-auto search-form" action="/listings" method="GET">
+
+                <input
+                    class="form-control me-2 search-input"
+                    type="search"
+                    name="search"
+                    placeholder="Search destinations">
+
+                <button class="btn search-btn" type="submit">
+                    <i class="fa-solid fa-magnifying-glass"></i>Search
+                </button>
+
+            </form>
+
+            <!-- Right -->
+            <div class="navbar-nav ms-md-auto">
+
+                <a class="nav-link" href="/listings/new">
+                    Airbnb your home
+                </a>
+
+                <% if(!currUser){ %>
+
+                    <a class="nav-link" href="/signup">
+                        <b>Sign Up</b>
+                    </a>
+
+                    <a class="nav-link" href="/login">
+                        <b>Log In</b>
+                    </a>
+
+                <% } else { %>
+
+                    <a class="nav-link" href="/logout">
+                        <b>Logout</b>
+                    </a>
+
+                <% } %>
+
+            </div>
+
+        </div>
+
     </div>
 
-</div>
+</nav>
