@@ -16,9 +16,10 @@
     .search-btn {
         background-color: #fe424d;
         color: white;
+        border: none;
         border-radius: 25px;
         padding: 0.5rem 1rem;
-        border: none;
+        white-space: nowrap;
     }
 
     .search-btn:hover {
@@ -33,10 +34,10 @@
     .search-input {
         border-radius: 25px;
         padding: 0.5rem 1rem;
-        min-width: 250px;
+        width: 250px;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width:768px) {
 
         .navbar {
             height: auto;
@@ -54,16 +55,16 @@
         .search-form {
             width: 100%;
             margin: 1rem 0;
+            flex-direction: column;
         }
 
         .search-input {
-            min-width: 0;
             width: 100%;
+            margin-bottom: 0.5rem;
         }
 
         .search-btn {
             width: 100%;
-            margin-top: 0.5rem;
         }
     }
 </style>
@@ -88,10 +89,8 @@
             aria-label="Toggle navigation">
 
             <span class="navbar-toggler-icon"></span>
-
         </button>
 
-        <!-- Navbar -->
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
 
             <!-- Left -->
@@ -99,20 +98,24 @@
                 <a class="nav-link" href="/listings">Explore</a>
             </div>
 
-            <!-- Center Search -->
-            <form class="d-flex mx-md-auto search-form" action="/listings" method="GET">
+            <!-- Center Search (Only on Listings page) -->
+            <% if (req.path === "/listings") { %>
 
-                <input
-                    class="form-control me-2 search-input"
-                    type="search"
-                    name="search"
-                    placeholder="Search destinations">
+                <form class="d-flex mx-md-auto search-form" action="/listings" method="GET">
 
-                <button class="btn search-btn" type="submit">
-                    <i class="fa-solid fa-magnifying-glass"></i>Search
-                </button>
+                    <input
+                        class="form-control me-2 search-input"
+                        type="search"
+                        name="search"
+                        placeholder="Search destinations">
 
-            </form>
+                    <button class="btn search-btn" type="submit">
+                        <i class="fa-solid fa-magnifying-glass"></i> Search
+                    </button>
+
+                </form>
+
+            <% } %>
 
             <!-- Right -->
             <div class="navbar-nav ms-md-auto">
@@ -121,7 +124,7 @@
                     Airbnb your home
                 </a>
 
-                <% if(!currUser){ %>
+                <% if (!currUser) { %>
 
                     <a class="nav-link" href="/signup">
                         <b>Sign Up</b>

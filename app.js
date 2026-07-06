@@ -100,8 +100,10 @@ passport.deserializeUser(User.deserializeUser()); //unstore userinfo after sessi
 app.use((req, res, next) => {
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
-    res.locals.currUser = req.user; // we cannot acces req object in ejs , so we are creating local object  so it can be used in ejs //navbar.ejs 
-    next();
+    res.locals.currUser = req.user;
+     // we cannot acces req object in ejs , so we are creating local object  so it can be used in ejs //navbar.ejs 
+    res.locals.req = req;  
+     next();
 });
 
 
