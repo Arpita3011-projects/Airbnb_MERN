@@ -46,19 +46,25 @@ const dburl = process.env.ATLASDB_URL;
 async function main() {
     if (!dburl) throw new Error('Missing ATLASDB_URL environment variable');
 
-    await mongoose.connect(dburl, {
-        serverSelectionTimeoutMS: 5000,
-    });
+    console.log("ATLASDB_URL exists:", !!process.env.ATLASDB_URL);
+    console.log(
+        "Connecting to:",
+        process.env.ATLASDB_URL?.replace(/:\/\/. *@/, "://****@")
+    );
 
-    // Intentionally no console collection logging (hide collections from Atlas while developing)
-    // console.log('Connected DB name:', mongoose.connection.name);
-    // console.log('Listing model uses collection:', Listing.collection.name);
-    // const listingCount = await Listing.countDocuments({});
-    // console.log('Listings count:', listingCount);
+    try {
+        await mongoose.connect(dburl, {
+            serverSelectionTimeoutMS: 5000,
+        });
 
-
-
+        console.log("Mongo readyState:", mongoose.connection.readyState);
+        console.log("Mongo database:", mongoose.connection.name);
+    } catch (err) {
+        console.error("Mongo connection failed:", err);
+        throw err;
+    }
 }
+
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -128,6 +134,14 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render("error.ejs", { err, message, statusCode });
 });
 
-app.listen(8080, () => {
-    console.log("server is listening to port 8080");
-});
+main()
+    .then(() => {
+        app.listen(8080, () => {
+            console.log("server is listening to port 8080");
+        });
+    })
+    .catch((err) => {
+        console.error("Fatal: failed to connect to MongoDB:", err);
+        process.exit(1);
+    });
+

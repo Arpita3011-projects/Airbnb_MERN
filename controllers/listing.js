@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Listing=require("../models/listing.js");
 
 async function geocodeLocation(location) {
@@ -36,16 +37,39 @@ async function geocodeLocation(location) {
     return [lon, lat];
 }
 
-module.exports.index=async(req,res)=>{ 
+// module.exports.index=async(req,res)=>{ 
+//     try {
+//         console.log("ReadyState:", mongoose.connection.readyState);
+// console.log("Database:", mongoose.connection.name);
+
+// const count = await Listing.countDocuments();
+// console.log("Listing count:", count);
+
+// const allListings = await Listing.find({});
+//     } catch(err) {
+//         console.log(err);
+//         res.status(500).send("Error fetching listings");
+//     }
+// };
+
+
+module.exports.index = async (req, res) => {
     try {
-        const allListings=await Listing.find({});
-        res.render("listings/index",{allListings});
-    } catch(err) {
-        console.log(err);
+        console.log("ReadyState:", mongoose.connection.readyState);
+        console.log("Database:", mongoose.connection.name);
+
+        const count = await Listing.countDocuments();
+        console.log("Listing count:", count);
+
+        const allListings = await Listing.find({});
+
+        res.render("listings/index", { allListings });
+
+    } catch (err) {
+        console.error(err);
         res.status(500).send("Error fetching listings");
     }
 };
-
 
 module.exports.rendernewForm=(req,res)=>{
   
@@ -56,6 +80,7 @@ module.exports.rendernewForm=(req,res)=>{
 
 module.exports.showListing=(async (req,res)=>{//wrapAsync is a function that takes a function as an argument and returns a new function that catches any error thrown by the original function and passes it to the next middleware which is the error handling middleware
      let {id} = req.params;
+     console.log("ReadyState before Listing.find:", mongoose.connection.readyState);
      const listing= await Listing.findById(id).populate({path:"reviews",populate:{path:"author"}}).populate("owner");
      if(!listing){
          req.flash("error", "Listing not found!");
