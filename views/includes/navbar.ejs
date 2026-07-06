@@ -32,7 +32,7 @@
 
 
 
-<<div class="collapse navbar-collapse d-flex align-items-center" id="navbarNavAltMarkup">
+<div class="collapse navbar-collapse d-flex align-items-center" id="navbarNavAltMarkup"></div>
   <div class="container-fluid">
     <a class="navbar-brand" href="/listings"><i class="fa-regular fa-compass"></i></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" >
@@ -45,9 +45,9 @@
        
 
       </div>
-   <% if (currentPath === "/listings") { %>
+  <% if (currentPath === "/listings") { %>
 
-  <div class="search-wrapper">
+  <div class="mx-auto">
     <form class="d-flex" action="/listings" method="GET">
       <input class="form-control me-2 search-input" type="search" name="search" placeholder="Search">
       <button class="btn search-btn" type="submit">
