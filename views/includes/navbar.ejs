@@ -46,13 +46,16 @@
 
       </div>
      
-    <div class="search-wrapper">
-  <form class="d-flex" action="/listings" method="GET">
-     <input class="form-control me-2 search-input" type="search" name="search" placeholder="Search">
-      <button class="btn search-btn" type="submit" ><i class="fa-solid fa-magnifying-glass"></i>Search</button>
-        
+    <% if (currentPath.startsWith("/listings")) { %>
+  <div class="search-wrapper">
+    <form class="d-flex" action="/listings" method="GET">
+      <input class="form-control me-2 search-input" type="search" name="search" placeholder="Search">
+      <button class="btn search-btn" type="submit">
+        <i class="fa-solid fa-magnifying-glass"></i>Search
+      </button>
     </form>
-      </div>
+  </div>
+<% } %>
 
 
 

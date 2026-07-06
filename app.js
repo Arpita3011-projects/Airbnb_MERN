@@ -102,7 +102,7 @@ app.use((req, res, next) => {
     res.locals.error = req.flash("error");
     res.locals.currUser = req.user;
      // we cannot acces req object in ejs , so we are creating local object  so it can be used in ejs //navbar.ejs 
-    res.locals.req = req;  
+     res.locals.currentPath = req.path;
      next();
 });
 
