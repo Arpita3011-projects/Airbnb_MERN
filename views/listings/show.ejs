@@ -69,8 +69,6 @@
   <h4>Reviews</h4>
   <hr>
   <% if(listing.reviews && listing.reviews.length) { %>
-    
-    <h4>Reviews</h4>
     <% for(let review of listing.reviews) { %>
       <div class="card col-5 ms-3 mb-3">
         <div class="card-body">
@@ -79,7 +77,6 @@
             Rated: <%= review.rating %> stars
           </p>
           <p class="card-text"><%=review.comment%></p>
-          
         </div>
         <% if(currUser && review.author && review.author._id && review.author._id.equals(currUser._id)) { %>
           <form class="mb-3 mt-3" method="POST" action="/listings/<%=listing._id%>/reviews/<%=review._id%>?_method=DELETE">
@@ -88,9 +85,11 @@
         <% } %>
       </div>
     <% } %>
-    <% } else { %>
-      <p mt-2>No reviews yet.</p>
-    <% } %>
+  <% } else { %>
+    <p mt-2>No reviews yet.</p>
+  <% } %>
+
+
   </div>
   <hr>
   <div class="col-12 mb-3 center">
@@ -98,8 +97,8 @@
     <div id="map"></div>
   </div>
 </div>
-
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
 <script>
   const coordinates = <%- JSON.stringify(
     (listing.geometry && Array.isArray(listing.geometry.coordinates)&&listing.geometry.coordinates.length === 2)
