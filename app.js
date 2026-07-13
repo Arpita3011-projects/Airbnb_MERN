@@ -118,12 +118,34 @@ passport.deserializeUser(User.deserializeUser()); //unstore userinfo after sessi
 
 
 app.use((req, res, next) => {
-    res.locals.success = req.flash("success");
-    res.locals.error = req.flash("error");
+    // TEMP DEBUG (keep functionality): do not alter values/flow
+    const sessionSecretExists = !!process.env.SESSION_SECRET;
+    const hasReqUser = !!req.user;
+
+    // Note: req.flash() consumes flash messages. We store results and assign them back.
+    const successTokens = req.flash("success");
+    const errorTokens = req.flash("error");
+
+    res.locals.success = successTokens;
+    res.locals.error = errorTokens;
     res.locals.currUser = req.user;
-     // we cannot acces req object in ejs , so we are creating local object  so it can be used in ejs //navbar.ejs 
-     res.locals.currentPath = req.path;
-     next();
+    res.locals.currentPath = req.path;
+
+    console.log(
+        '[DEBUG locals]',
+        req.method,
+        req.originalUrl,
+        'SESSION_SECRET?',
+        sessionSecretExists,
+        'req.user?',
+        hasReqUser,
+        'res.locals.success=',
+        res.locals.success,
+        'res.locals.error=',
+        res.locals.error
+    );
+
+    next();
 });
 
 
@@ -144,8 +166,17 @@ app.use((req,res,next) => {//this middleware will match all the routes that are 
 });
 
 app.use((err, req, res, next) => {
+    // TEMP DEBUG (keep functionality): do not alter values/flow
+    console.log('[DEBUG error handler]', {
+        url: req.originalUrl,
+        status: err?.statusCode,
+        message: err?.message,
+        stack: err?.stack,
+    });
+
     // Ensure flash/auth locals exist for error renders too.
-     console.log("Locals middleware executed:", req.originalUrl);
+    // Keep behavior identical to previous code.
+    console.log("Locals middleware executed:", req.originalUrl);
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     res.locals.currUser = req.user;

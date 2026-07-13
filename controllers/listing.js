@@ -63,6 +63,7 @@ module.exports.index = async (req, res) => {
 
         const allListings = await Listing.find({});
 
+        console.log('[DEBUG render]', 'controller=listings/index', 'view=listings/index.ejs', 'res.locals.success=', res.locals.success, 'res.locals.error=', res.locals.error);
         res.render("listings/index", { allListings });
 
     } catch (err) {
@@ -87,6 +88,7 @@ module.exports.showListing=(async (req,res)=>{//wrapAsync is a function that tak
          return res.redirect("/listings"); 
      }
      console.log(listing);
+     console.log('[DEBUG render]', 'controller=listings/showListing', 'view=listings/show.ejs', 'res.locals.success=', res.locals.success, 'res.locals.error=', res.locals.error);
      res.render("listings/show.ejs",{listing});
 });
 
