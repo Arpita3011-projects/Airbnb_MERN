@@ -17,28 +17,25 @@ module.exports.signup=(async(req,res,next)=>{
     }
   });
 
-
-  module.exports.renderSignup=(req, res) => {
-  res.render("users/signup.ejs");
+module.exports.renderSignup=(req, res) => {
+  res.json({ message: "Signup endpoint" });
 };
-
 
 module.exports.renderLogin=(req, res) => {
-  res.render("users/login.ejs");
+  res.json({ message: "Login endpoint" });
 };
 
+module.exports.login=async(req,res)=>{
+  req.flash("success", "Welcome to Wanderlust, login successful!");
+  let redirectUrl=res.locals.redirectUrl||"/listings";
+  res.json({ redirectUrl });
+};
 
- module.exports.login=async(req,res)=>{
-    req.flash("success", "Welcome to Wanderlust, login successful!");
-    let redirectUrl=res.locals.redirectUrl||"/listings";
-    res.redirect( redirectUrl);
-  };
-
-
- module.exports.logout= (req, res, next) => {
+module.exports.logout= (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err);
     req.flash("success", "Logged out!");
-    res.redirect("/listings");
+    res.json({ success: true });
   });
-}
+};
+

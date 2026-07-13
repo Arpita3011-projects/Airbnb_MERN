@@ -1,30 +1,31 @@
 const Listing=require("./models/listing");
 const Review=require("./models/review.js");
 const ExpressError=require("./utils/ExpressError.js");
-const {listingSchema,reviewSchema} = require("./views/listings/schema.js");
+const { validateListingBody, validateReviewBody } = require("./utils/listingValidation.js");
+
+
 
 
 
 module.exports.validateListing=(req,res,next)=>{
-    const {error} = listingSchema.validate(req.body);
+    const { error } = validateListingBody(req.body);
     if (error) {
         const errmsg = error.details.map(el => el.message).join(",");
         throw new ExpressError(400, errmsg);
-    } else {
-        next();
     }
+    next();
 }
 
 
 module.exports.validateReview=(req,res,next)=>{
-    const {error}=reviewSchema.validate(req.body);
+    const { error } = validateReviewBody(req.body);
     if (error){
         const errmsg = error.details.map(el => el.message).join(",");
         throw new ExpressError(400, errmsg);
-    } else {
-        next();
     }
+    next();
 }
+
 
 
 module.exports.isLoggedIn=((req,res,next)=>{

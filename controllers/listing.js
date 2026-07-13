@@ -37,22 +37,6 @@ async function geocodeLocation(location) {
     return [lon, lat];
 }
 
-// module.exports.index=async(req,res)=>{ 
-//     try {
-//         console.log("ReadyState:", mongoose.connection.readyState);
-// console.log("Database:", mongoose.connection.name);
-
-// const count = await Listing.countDocuments();
-// console.log("Listing count:", count);
-
-// const allListings = await Listing.find({});
-//     } catch(err) {
-//         console.log(err);
-//         res.status(500).send("Error fetching listings");
-//     }
-// };
-
-
 module.exports.index = async (req, res) => {
     try {
         console.log("ReadyState:", mongoose.connection.readyState);
@@ -63,8 +47,8 @@ module.exports.index = async (req, res) => {
 
         const allListings = await Listing.find({});
 
-        console.log('[DEBUG render]', 'controller=listings/index', 'view=listings/index.ejs', 'res.locals.success=', res.locals.success, 'res.locals.error=', res.locals.error);
-        res.render("listings/index", { allListings });
+   
+        res.json({ allListings });
 
     } catch (err) {
         console.error(err);
@@ -73,13 +57,10 @@ module.exports.index = async (req, res) => {
 };
 
 module.exports.rendernewForm=(req,res)=>{
-  
-    res.render("listings/new.ejs");
+    res.json({ listing: null });
 }
 
-
-
-module.exports.showListing=(async (req,res)=>{//wrapAsync is a function that takes a function as an argument and returns a new function that catches any error thrown by the original function and passes it to the next middleware which is the error handling middleware
+module.exports.showListing=(async (req,res)=>{
      let {id} = req.params;
      console.log("ReadyState before Listing.find:", mongoose.connection.readyState);
      const listing= await Listing.findById(id).populate({path:"reviews",populate:{path:"author"}}).populate("owner");
@@ -88,30 +69,29 @@ module.exports.showListing=(async (req,res)=>{//wrapAsync is a function that tak
          return res.redirect("/listings"); 
      }
      console.log(listing);
-     console.log('[DEBUG render]', 'controller=listings/showListing', 'view=listings/show.ejs', 'res.locals.success=', res.locals.success, 'res.locals.error=', res.locals.error);
-     res.render("listings/show.ejs",{listing});
+    
+     res.json({ listing });
 });
-
 
 module.exports.createListing=(async(req,res,next)=>{
     if(!req.body.listing){
-        throw new ExpressError(400,"Invalid Listing Data");
+        throw new (require("../utils/ExpressError.js"))(400,"Invalid Listing Data");
     }
-    
-    let coordinates = [77.2090, 28.6139]; // Default to New Delhi coordinates
+
+    let coordinates = [77.2090, 28.6139];
     try {
         coordinates = await geocodeLocation(req.body.listing.location);
     } catch(err) {
         console.error("Geocoding error during create:", err);
     }
 
-    const newListing=new Listing(req.body.listing);//req.body.listing is the data from the form and Listing is the model we created
+    const newListing=new Listing(req.body.listing);
     newListing.owner=req.user._id;
     newListing.geometry = {
         type: "Point",
         coordinates: coordinates
     };
-    
+
     if(typeof req.file !== "undefined") {
         let url = req.file.path;
         let filename = req.file.filename;
@@ -121,14 +101,12 @@ module.exports.createListing=(async(req,res,next)=>{
     await newListing.save();
     req.flash("success", "Successfully made a new listing!");
     console.log(newListing);
-    res.redirect("/listings"); 
-}
-);
-
+    res.status(201).json({ listing: newListing });
+});
 
 module.exports.renderupdatedListing=(async(req,res,next)=>{
     let {id}=req.params;
-    
+
     let coordinates = [77.2090, 28.6139];
     let geocodedSuccessfully = false;
     try {
@@ -142,7 +120,7 @@ module.exports.renderupdatedListing=(async(req,res,next)=>{
 
     if (!listing) {
         req.flash("error", "Listing not found!");
-        return res.redirect("/listings");
+        return res.status(404).json({ error: "Listing not found" });
     }
 
     if (geocodedSuccessfully) {
@@ -160,28 +138,26 @@ module.exports.renderupdatedListing=(async(req,res,next)=>{
 
     await listing.save();
     req.flash("success", "Listing Updated!");
-    res.redirect(`/listings/${id}`);
+    res.status(200).json({ listing });
 });
-
-
 
 module.exports.rendereditedListing=(async(req,res)=>{
-let {id}=req.params;
-const listing= await Listing.findById(id);
-if(!listing){
+    let {id}=req.params;
+    const listing= await Listing.findById(id);
+    if(!listing){
          req.flash("error", "Listing not found!");
-         res.redirect("/listings"); 
+         return res.redirect("/listings"); 
      }
-    res.render("listings/edit.ejs",{listing}); //we are passing the listings to edit.ejs and it takes template , makes htm
+    res.json({ listing });
 });
 
-
 module.exports.renderdeleteListing=(async(req,res,next)=>{
-let {id}=req.params;
-let deletedListing=await Listing.findByIdAndDelete(id);
-console.log(deletedListing);
-req.flash("success", "Listing Deleted!");
-res.redirect("/listings");
+    let {id}=req.params;
+    let deletedListing=await Listing.findByIdAndDelete(id);
+    console.log(deletedListing);
+    req.flash("success", "Listing Deleted!");
+    res.status(200).json({ deleted: true, id });
 })
 
 module.exports.geocodeLocation = geocodeLocation;
+
