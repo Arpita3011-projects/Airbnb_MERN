@@ -1,11 +1,6 @@
 if(process.env.NODE_ENV !="production"){
 require('dotenv').config();
 }
-console.log("=================================");
-console.log("DEPLOY VERSION: JULY-13-DEBUG-001");
-console.log("=================================");
-console.log("=== DEPLOYMENT CHECK ===");
-console.log("This is the latest app.js");
 
 const express = require("express");
 const app = express(); //creating server using express
@@ -89,7 +84,7 @@ app.engine("ejs", ejsMate); //to use ejs mate as the template engine for our app
 app.use(express.static(path.join(__dirname, "public"))); //to serve static files from the public directory and we are using path.join to join the current directory with the public directory and it will give us the absolute path of the public directory and we are using express.static to serve the static files from the public directory
 
 
-console.log("SESSION_SECRET exists:", !!process.env.SESSION_SECRET);
+
 const sessionOptions = {
     
     store,
@@ -120,33 +115,10 @@ passport.deserializeUser(User.deserializeUser()); //unstore userinfo after sessi
 
 
 app.use((req, res, next) => {
-    // TEMP DEBUG (keep functionality): do not alter values/flow
-    const sessionSecretExists = !!process.env.SESSION_SECRET;
-    const hasReqUser = !!req.user;
-
-    // Note: req.flash() consumes flash messages. We store results and assign them back.
-    const successTokens = req.flash("success");
-    const errorTokens = req.flash("error");
-
-    res.locals.success = successTokens;
-    res.locals.error = errorTokens;
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
     res.locals.currUser = req.user;
     res.locals.currentPath = req.path;
-
-    console.log(
-        '[DEBUG locals]',
-        req.method,
-        req.originalUrl,
-        'SESSION_SECRET?',
-        sessionSecretExists,
-        'req.user?',
-        hasReqUser,
-        'res.locals.success=',
-        res.locals.success,
-        'res.locals.error=',
-        res.locals.error
-    );
-
     next();
 });
 
@@ -168,24 +140,13 @@ app.use((req,res,next) => {//this middleware will match all the routes that are 
 });
 
 app.use((err, req, res, next) => {
-    // TEMP DEBUG (keep functionality): do not alter values/flow
-    console.log('[DEBUG error handler]', {
-        url: req.originalUrl,
-        status: err?.statusCode,
-        message: err?.message,
-        stack: err?.stack,
-    });
-
-    // Ensure flash/auth locals exist for error renders too.
-    // Keep behavior identical to previous code.
-    console.log("Locals middleware executed:", req.originalUrl);
-    res.locals.success = req.flash("success");
-    res.locals.error = req.flash("error");
-    res.locals.currUser = req.user;
-    res.locals.currentPath = req.path;
-
     let { statusCode = 500, message = "Something went Wrong" } = err;
-    res.status(statusCode).render("error.ejs", { err, message, statusCode });
+
+    res.status(statusCode).render("error.ejs", {
+        err,
+        message,
+        statusCode,
+    });
 });
 
 main()
