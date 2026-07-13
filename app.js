@@ -2,6 +2,9 @@ if(process.env.NODE_ENV !="production"){
 require('dotenv').config();
 }
 
+console.log("=== DEPLOYMENT CHECK ===");
+console.log("This is the latest app.js");
+
 const express = require("express");
 const app = express(); //creating server using express
 const mongoose = require("mongoose"); //connects mongodb with node.js
@@ -83,7 +86,10 @@ app.use(methodOverride("_method")); //to use method override in our app and we a
 app.engine("ejs", ejsMate); //to use ejs mate as the template engine for our app and it allows us to use layouts and partials in our ejs files
 app.use(express.static(path.join(__dirname, "public"))); //to serve static files from the public directory and we are using path.join to join the current directory with the public directory and it will give us the absolute path of the public directory and we are using express.static to serve the static files from the public directory
 
+
+console.log("SESSION_SECRET exists:", !!process.env.SESSION_SECRET);
 const sessionOptions = {
+    
     store,
     secret: process.env.SESSION_SECRET,
 
