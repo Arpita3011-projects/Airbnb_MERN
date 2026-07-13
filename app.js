@@ -137,8 +137,15 @@ app.use((req,res,next) => {//this middleware will match all the routes that are 
     next(new ExpressError(404, "Page Not Found"))
 });
 
-app.use((err,req,res,next) => {
-    let { statusCode=500, message="Something went Wrong" } = err;
+app.use((err, req, res, next) => {
+    // Ensure flash/auth locals exist for error renders too.
+     console.log("Locals middleware executed:", req.originalUrl);
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    res.locals.currUser = req.user;
+    res.locals.currentPath = req.path;
+
+    let { statusCode = 500, message = "Something went Wrong" } = err;
     res.status(statusCode).render("error.ejs", { err, message, statusCode });
 });
 
