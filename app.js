@@ -1,7 +1,9 @@
 if(process.env.NODE_ENV !="production"){
 require('dotenv').config();
 }
-
+console.log("=================================");
+console.log("DEPLOY VERSION: JULY-13-DEBUG-001");
+console.log("=================================");
 console.log("=== DEPLOYMENT CHECK ===");
 console.log("This is the latest app.js");
 
