@@ -4,8 +4,8 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import ReviewsSection from '../components/ReviewsSection';
 
+
 export default function ListingDetailPage() {
-  console.log('[ListingDetailPage] render');
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -18,12 +18,13 @@ export default function ListingDetailPage() {
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
 
+
   const fetchListing = async () => {
-    console.log('[ListingDetailPage] fetchListing called with id=', id);
     try {
-      console.log('[ListingDetailPage] before api.get');
+
+
       const response = await api.get(`/listings/${id}`);
-      console.log('[ListingDetailPage] after api.get');
+
       const data = response.data.listing || response.data;
       setListing(data);
     } catch (err) {

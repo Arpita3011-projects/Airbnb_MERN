@@ -11,10 +11,11 @@ router.route("/signup")
 .post(wrapAsync(userController.signup));
 
 
+
 router.post("/login", (req, res, next) => {
-    console.log("LOGIN ROUTE HIT");
     next();
 }, passport.authenticate("local"));
+
 
 router.route("/login")
 .get(userController.renderLogin)

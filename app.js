@@ -127,19 +127,18 @@ app.get("/", (req, res) => {
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
-console.log("Mounting /me routes...");
+
 app.use((req, res, next) => {
-    console.log("Incoming:", req.method, req.url);
     next();
 });
 
 app.get("/me", (req, res) => {
-    console.log("DIRECT /me HIT");
     res.json({
         ok: true,
         user: req.user || null,
     });
 });
+
 
 
 

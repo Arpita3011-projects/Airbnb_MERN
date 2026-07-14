@@ -106,7 +106,7 @@ module.exports.renderupdatedListing=(async(req,res,next)=>{
         console.error("Geocoding error during update:", err);
     }
 
-    let listing=await Listing.findByIdAndUpdate(id, { ...req.body.listing }, { new: true, runValidators: true });
+    let listing=await Listing.findByIdAndUpdate(id, { ...req.body.listing }, { returnDocument: "after", runValidators: true });
 
     if (!listing) {
         req.flash("error", "Listing not found!");
