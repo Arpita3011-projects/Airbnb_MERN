@@ -6,14 +6,22 @@ export default function ReviewsSection({ listingId, reviews, onReviewAddedOrDele
   const [rating, setRating] = useState(1);
   const [comment, setComment] = useState('');
   const [formError, setFormError] = useState('');
+  const [formValidated, setFormValidated] = useState(false);
   const [submittingReview, setSubmittingReview] = useState(false);
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     setFormError('');
+    setFormValidated(true);
 
-    if (!comment.trim()) {
+    // Lightweight validation (matches backend Joi): rating 1-5, comment required
+    const trimmedComment = comment.trim();
+    if (!trimmedComment) {
       setFormError('Please enter a comment.');
+      return;
+    }
+    if (Number.isNaN(Number(rating)) || Number(rating) < 1 || Number(rating) > 5) {
+      setFormError('Please select a rating from 1 to 5.');
       return;
     }
 
@@ -26,8 +34,13 @@ export default function ReviewsSection({ listingId, reviews, onReviewAddedOrDele
       // This means we MUST submit the review as urlencoded form data, just like login/signup!
       // This is an extremely critical detail! If we send JSON, req.body.review will be undefined on backend.
       const params = new URLSearchParams();
-      params.append('review[rating]', rating);
-      params.append('review[comment]', comment);
+      // Backend middleware expects Joi on req.body.review (rating/comment)
+      // Express.urlencoded cannot parse nested keys reliably in all setups,
+      // so send the flattened values that we map to req.body.review.
+      params.append("review[rating]", rating);
+      params.append("review[comment]", comment);
+
+
 
       await api.post(`/listings/${listingId}/reviews`, params, {
         headers: {
@@ -35,7 +48,11 @@ export default function ReviewsSection({ listingId, reviews, onReviewAddedOrDele
         },
       });
 
-      setComment('');
+      e.target.reset();
+setComment('');
+setRating(1);
+setFormValidated(false);
+setFormError('');
       setRating(1);
       if (onReviewAddedOrDeleted) {
         onReviewAddedOrDeleted();
@@ -68,7 +85,11 @@ export default function ReviewsSection({ listingId, reviews, onReviewAddedOrDele
         <div>
           <h4>Leave a Review</h4>
           <br />
-          <form className="mb-3 needs-validation" onSubmit={handleReviewSubmit} noValidate>
+          <form
+            className={`mb-3 needs-validation ${formValidated ? 'was-validated' : ''}`}
+            onSubmit={handleReviewSubmit}
+            noValidate
+          >
             <fieldset className="starability-slot">
               <input
                 type="radio"

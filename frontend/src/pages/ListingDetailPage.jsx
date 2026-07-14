@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import ReviewsSection from '../components/ReviewsSection';
 
 export default function ListingDetailPage() {
+  console.log('[ListingDetailPage] render');
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -18,8 +19,11 @@ export default function ListingDetailPage() {
   const mapInstanceRef = useRef(null);
 
   const fetchListing = async () => {
+    console.log('[ListingDetailPage] fetchListing called with id=', id);
     try {
+      console.log('[ListingDetailPage] before api.get');
       const response = await api.get(`/listings/${id}`);
+      console.log('[ListingDetailPage] after api.get');
       const data = response.data.listing || response.data;
       setListing(data);
     } catch (err) {
@@ -116,7 +120,16 @@ export default function ListingDetailPage() {
     );
   }
 
-  const isOwner = user && listing.owner && (listing.owner._id === user._id || listing.owner === user._id);
+  const isOwner = (() => {
+    if (!user || !listing?.owner) return false;
+
+    // Normalize all possible forms into strings for comparison.
+    const currentUserId = user?._id || user?.id;
+    const ownerId = listing.owner?._id || listing.owner?.id || listing.owner;
+
+    if (!currentUserId || !ownerId) return false;
+    return String(ownerId) === String(currentUserId);
+  })();
 
   return (
     <div className="row mt-3">

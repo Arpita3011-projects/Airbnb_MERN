@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 
 export default function NewListingPage() {
   const navigate = useNavigate();
+  const { user, loading } = useAuth();
 
   // Form Field States
   const [title, setTitle] = useState('');
@@ -29,6 +31,16 @@ export default function NewListingPage() {
       setImagePreviewUrl('');
     }
   };
+
+  if (loading) {
+    return (
+      <div className="text-center mt-5">
+        <div className="spinner-border text-danger" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();

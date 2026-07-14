@@ -45,18 +45,13 @@ const dburl = process.env.ATLASDB_URL;
 
 async function main() {
     if (!dburl) throw new Error('Missing ATLASDB_URL environment variable');
-    console.log("ATLASDB_URL exists:", !!process.env.ATLASDB_URL);
-    console.log(
-        "Connecting to:",
-        process.env.ATLASDB_URL?.replace(/:\/\/. *@/, "://****@")
-    );
+
     try {
         await mongoose.connect(dburl, {
             serverSelectionTimeoutMS: 5000,
         });
 
-        console.log("Mongo readyState:", mongoose.connection.readyState);
-        console.log("Mongo database:", mongoose.connection.name);
+
     } catch (err) {
         console.error("Mongo connection failed:", err);
         throw err;
@@ -132,6 +127,21 @@ app.get("/", (req, res) => {
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
+console.log("Mounting /me routes...");
+app.use((req, res, next) => {
+    console.log("Incoming:", req.method, req.url);
+    next();
+});
+
+app.get("/me", (req, res) => {
+    console.log("DIRECT /me HIT");
+    res.json({
+        ok: true,
+        user: req.user || null,
+    });
+});
+
+
 
 
 
@@ -155,8 +165,9 @@ app.use((err, req, res, next) => {
 main()
     .then(() => {
         const PORT = process.env.PORT || 8080;
+
         app.listen(PORT, () => {
-            console.log(`server is listening to port ${PORT}`);
+            console.log(`Server is listening on http://localhost:${PORT}`);
         });
     })
     .catch((err) => {

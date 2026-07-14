@@ -41,20 +41,21 @@ export default function SignupPage() {
         },
       });
 
-      // Axios follows the redirect. Check final redirected URL.
-      const finalUrl = response.request.responseURL || '';
-      if (finalUrl.includes('/signup')) {
-        setErrorMsg('User registration failed. Username/Email might already be taken.');
-      } else {
-        // Successful signup & automatic login
-        if (login) {
-          login(username);
-        }
-        navigate('/listings');
+      // If backend responds with redirectUrl JSON, follow it. Otherwise fallback to /listings.
+      const redirectUrl = response.data?.redirectUrl;
+      if (redirectUrl) {
+        await login();
+        navigate(redirectUrl);
+        return;
       }
+
+      // Successful signup & automatic login: best-effort update UI.
+      await login();
+      navigate('/listings');
     } catch (err) {
       console.error('Signup error details:', err);
-      setErrorMsg('User registration failed. Please try again.');
+      const msg = err?.response?.data?.message || err?.message || 'User registration failed.';
+      setErrorMsg(msg);
     } finally {
       setSubmitting(false);
     }

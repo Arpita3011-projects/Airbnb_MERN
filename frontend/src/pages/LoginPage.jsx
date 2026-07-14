@@ -4,13 +4,14 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 
 export default function LoginPage() {
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [validated, setValidated] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const { login, checkUserStatus } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -47,22 +48,21 @@ export default function LoginPage() {
         },
       });
 
-      // Check if redirect went back to login (failure) or listings (success)
-      // Axios automatically follows redirects. The final response URL tells us where we ended up.
-      const finalUrl = response.request.responseURL || '';
-      if (finalUrl.includes('/login')) {
-        setErrorMsg('Invalid username or password.');
-      } else {
-        // Successful login: update the auth context user state
-        if (login) {
-          // If our login method in context is updated, we call it or set state manually
-          await login(username, password);
-        }
-        navigate('/listings');
+      // If backend responds with redirectUrl JSON, follow it. Otherwise fallback to /listings.
+      const redirectUrl = response.data?.redirectUrl;
+      if (redirectUrl) {
+        await login();
+        navigate(redirectUrl);
+        return;
       }
+
+      await login();
+      navigate('/listings');
     } catch (err) {
       console.error('Login error details:', err);
-      setErrorMsg('Invalid username or password.');
+      // Backend usually redirects on failure; Axios may surface that as an error.
+      const msg = err?.response?.data?.message || err?.message || 'Invalid username or password.';
+      setErrorMsg(msg);
     } finally {
       setSubmitting(false);
     }

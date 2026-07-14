@@ -10,6 +10,5 @@ const userSchema=new Schema({
  }                                // this also has methods to autheticate user registration , so we dont  have to do it from scratch
 
 });
-console.log(passportLocalMongoose);
 userSchema.plugin(passportLocalMongoose.default); //uses pbkdf2 hashing algorithm
 module.exports=mongoose.model('User',userSchema);

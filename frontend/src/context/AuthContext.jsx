@@ -1,29 +1,41 @@
-import { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import api from '../api/axios';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem('user');
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = (username) => {
-    const userData = { username };
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+  const fetchCurrentUser = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('/me');
+      setUser(response.data?.user ?? null);
+    } catch (err) {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCurrentUser();
+  }, [fetchCurrentUser]);
+
+  // UI login: backend session is created by /login POST.
+  // After that, we re-fetch session user.
+  const login = async () => {
+    await fetchCurrentUser();
   };
 
   const logout = async () => {
     try {
-      await api.get('/logout');
+      await api.post('/logout');
     } catch (err) {
       console.error('Logout error on server:', err);
     } finally {
       setUser(null);
-      localStorage.removeItem('user');
     }
   };
 
@@ -32,6 +44,7 @@ export function AuthProvider({ children }) {
     loading,
     login,
     logout,
+    refreshUser: fetchCurrentUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -44,4 +57,4 @@ export function useAuth() {
   }
   return context;
 }
-// 
+

@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import NewListingPage from './pages/NewListingPage';
 import EditListingPage from './pages/EditListingPage';
+import RequireAuth from './components/RequireAuth';
 
 export const router = createBrowserRouter([
   {
@@ -22,7 +23,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'listings/new',
-        element: <NewListingPage />,
+        element: (
+          <RequireAuth>
+            <NewListingPage />
+          </RequireAuth>
+        ),
       },
       {
         path: 'listings/:id',
@@ -30,7 +35,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'listings/:id/edit',
-        element: <EditListingPage />,
+        element: (
+          <RequireAuth>
+            <EditListingPage />
+          </RequireAuth>
+        ),
       },
       {
         path: 'login',

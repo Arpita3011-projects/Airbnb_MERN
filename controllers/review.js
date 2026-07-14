@@ -18,6 +18,7 @@ module.exports.createReview=(async(req,res)=>{
 });
 
 
+
 module.exports.deleteReview=async(req,res)=>{
     let {id,reviewId}=req.params;
     await Listing.findByIdAndUpdate(id,{$pull:{reviews:reviewId}});
@@ -28,4 +29,5 @@ module.exports.deleteReview=async(req,res)=>{
         reviewId
     });
 };
+
 

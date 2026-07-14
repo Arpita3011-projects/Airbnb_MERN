@@ -39,15 +39,8 @@ async function geocodeLocation(location) {
 
 module.exports.index = async (req, res) => {
     try {
-        console.log("ReadyState:", mongoose.connection.readyState);
-        console.log("Database:", mongoose.connection.name);
-
         const count = await Listing.countDocuments();
-        console.log("Listing count:", count);
-
         const allListings = await Listing.find({});
-
-   
         res.json({ allListings });
 
     } catch (err) {
@@ -62,13 +55,11 @@ module.exports.rendernewForm=(req,res)=>{
 
 module.exports.showListing=(async (req,res)=>{
      let {id} = req.params;
-     console.log("ReadyState before Listing.find:", mongoose.connection.readyState);
      const listing= await Listing.findById(id).populate({path:"reviews",populate:{path:"author"}}).populate("owner");
      if(!listing){
          req.flash("error", "Listing not found!");
          return res.redirect("/listings"); 
      }
-     console.log(listing);
     
      res.json({ listing });
 });
@@ -100,7 +91,6 @@ module.exports.createListing=(async(req,res,next)=>{
 
     await newListing.save();
     req.flash("success", "Successfully made a new listing!");
-    console.log(newListing);
     res.status(201).json({ listing: newListing });
 });
 
@@ -154,7 +144,6 @@ module.exports.rendereditedListing=(async(req,res)=>{
 module.exports.renderdeleteListing=(async(req,res,next)=>{
     let {id}=req.params;
     let deletedListing=await Listing.findByIdAndDelete(id);
-    console.log(deletedListing);
     req.flash("success", "Listing Deleted!");
     res.status(200).json({ deleted: true, id });
 })
