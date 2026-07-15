@@ -1,8 +1,6 @@
 import ReviewsSection from './components/ReviewsSection';
 
-// Global entry used by EJS.
-// EJS calls: window.ReviewsSectionApp.render({ root, listingId, reviews, user, onReviewAddedOrDeleted })
-// NOTE: This file intentionally avoids JSX so Vite can build even without JSX parser config.
+
 window.ReviewsSectionApp = {
   render: ({ root, listingId, reviews, user, onReviewAddedOrDeleted }) => {
     if (!root) return;

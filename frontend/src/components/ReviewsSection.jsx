@@ -14,7 +14,7 @@ export default function ReviewsSection({ listingId, reviews, onReviewAddedOrDele
     setFormError('');
     setFormValidated(true);
 
-    // Lightweight validation (matches backend Joi): rating 1-5, comment required
+    
     const trimmedComment = comment.trim();
     if (!trimmedComment) {
       setFormError('Please enter a comment.');
@@ -27,20 +27,9 @@ export default function ReviewsSection({ listingId, reviews, onReviewAddedOrDele
 
     setSubmittingReview(true);
     try {
-      // Backend expects: req.body.review = { rating, comment }
-      // The body parser on Express backend requires urlencoded payload or JSON if supported.
-      // Wait, let's verify if Express backend has urlencoded parser. Yes!
-      // Does it support JSON body parser? We checked app.js, it DOES NOT use app.use(express.json())!
-      // This means we MUST submit the review as urlencoded form data, just like login/signup!
-      // This is an extremely critical detail! If we send JSON, req.body.review will be undefined on backend.
       const params = new URLSearchParams();
-      // Backend middleware expects Joi on req.body.review (rating/comment)
-      // Express.urlencoded cannot parse nested keys reliably in all setups,
-      // so send the flattened values that we map to req.body.review.
       params.append("review[rating]", rating);
       params.append("review[comment]", comment);
-
-
 
       await api.post(`/listings/${listingId}/reviews`, params, {
         headers: {

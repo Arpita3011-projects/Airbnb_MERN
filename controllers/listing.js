@@ -2,46 +2,42 @@ const mongoose = require("mongoose");
 const Listing=require("../models/listing.js");
 
 async function geocodeLocation(location) {
-    const defaultCoordinates = [77.2090, 28.6139];
-
-    if (!location || typeof location !== "string" || location.trim() === "") {
+    const defaultCoordinates=[77.2090, 28.6139];
+    if (!location||typeof location!=="string"||location.trim()==="") {
         return defaultCoordinates;
     }
-
-    const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(location.trim())}`;
-
+    const geocodeUrl=`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(location.trim())}`;
     const response = await fetch(geocodeUrl, {
-        headers: {
+        headers:{
             "User-Agent": "WanderlustApp/1.0",
             "Accept-Language": "en"
         }
     });
-
     if (!response.ok) {
         throw new Error(`Nominatim geocoding failed with status ${response.status}`);
     }
 
-    const data = await response.json();
+    const data =await response.json();
 
-    if (!Array.isArray(data) || data.length === 0) {
+    if (!Array.isArray(data)||data.length===0) {
         return defaultCoordinates;
     }
 
-    const lon = parseFloat(data[0].lon);
-    const lat = parseFloat(data[0].lat);
+    const lon= parseFloat(data[0].lon);
+    const lat= parseFloat(data[0].lat);
 
-    if (!Number.isFinite(lon) || !Number.isFinite(lat)) {
+    if (!Number.isFinite(lon)||!Number.isFinite(lat)) {
         return defaultCoordinates;
     }
 
-    return [lon, lat];
+    return [lon,lat];
 }
 
-module.exports.index = async (req, res) => {
+module.exports.index=async(req,res) => {
     try {
-        const count = await Listing.countDocuments();
-        const allListings = await Listing.find({});
-        res.json({ allListings });
+        const count=await Listing.countDocuments();
+        const allListings=await Listing.find({});
+        res.json({allListings});
 
     } catch (err) {
         console.error(err);
@@ -60,7 +56,6 @@ module.exports.showListing=(async (req,res)=>{
          req.flash("error", "Listing not found!");
          return res.redirect("/listings"); 
      }
-    
      res.json({ listing });
 });
 
@@ -68,7 +63,6 @@ module.exports.createListing=(async(req,res,next)=>{
     if(!req.body.listing){
         throw new (require("../utils/ExpressError.js"))(400,"Invalid Listing Data");
     }
-
     let coordinates = [77.2090, 28.6139];
     try {
         coordinates = await geocodeLocation(req.body.listing.location);
@@ -83,10 +77,10 @@ module.exports.createListing=(async(req,res,next)=>{
         coordinates: coordinates
     };
 
-    if(typeof req.file !== "undefined") {
-        let url = req.file.path;
-        let filename = req.file.filename;
-        newListing.image = {url, filename};
+    if(typeof req.file!=="undefined") {
+        let url=req.file.path;
+        let filename=req.file.filename;
+        newListing.image={url, filename};
     }
 
     await newListing.save();

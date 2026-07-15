@@ -47,7 +47,7 @@ module.exports.saveRedirectUrl=(req,res,next)=>{
 module.exports.isOwner=async(req,res,next)=>{
     const {id}=req.params;
     const listing=await Listing.findById(id);
-    // If listing not found just redirect
+    
     if(!listing){
         req.flash("error","Listing not found!");
         return res.redirect("/listings");

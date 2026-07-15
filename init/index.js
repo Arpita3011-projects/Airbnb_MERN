@@ -14,7 +14,6 @@ async function main(){
 const initDB=async()=>{
    try {
       await Listing.deleteMany({});
-      // Ensure owner is stored as a real ObjectId so populate("owner") works reliably
       initData.data = initData.data.map((obj)=>({
                 ...obj,
                 owner: new mongoose.Types.ObjectId("6a3e82d7d55e3a28a3205a38"),

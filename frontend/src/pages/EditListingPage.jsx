@@ -6,7 +6,7 @@ export default function EditListingPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Form Field States
+  
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
@@ -15,7 +15,7 @@ export default function EditListingPage() {
   const [currentImageUrl, setCurrentImageUrl] = useState('');
   const [imageFile, setImageFile] = useState(null);
 
-  // UX states
+  
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
   const [validated, setValidated] = useState(false);
@@ -73,7 +73,7 @@ export default function EditListingPage() {
     setSubmitting(true);
 
     try {
-      // Must use FormData since we are doing a multipart/form-data file upload (Multer)
+      
       const formData = new FormData();
       formData.append('listing[title]', title);
       formData.append('listing[description]', description.trim());
@@ -91,7 +91,7 @@ export default function EditListingPage() {
         },
       });
 
-      // Axios follows the redirect. Inspect response URL to verify redirection to show page
+      
       const finalUrl = response.request.responseURL || '';
       if (finalUrl.includes(`/listings`)) {
         navigate(`/listings/${id}`);

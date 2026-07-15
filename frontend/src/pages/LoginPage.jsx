@@ -29,15 +29,7 @@ export default function LoginPage() {
     setSubmitting(true);
 
     try {
-      // Send credentials as application/x-www-form-urlencoded to mimic EJS form submission if needed,
-      // or standard JSON (Passport local strategy by default supports JSON body parsers in Express).
-      // Express app has: app.use(express.urlencoded({ extended: true }));
-      // Wait, let's see if Express parses JSON. It doesn't have app.use(express.json())!
-      // Ah! Let's check app.js:
-      // Line 71: app.use(express.urlencoded({ extended: true }));
-      // There is NO app.use(express.json()) in app.js!
-      // This is an extremely critical detail! If we send JSON, req.body will be empty on the backend!
-      // So we MUST send it as urlencoded form data!
+      
       const params = new URLSearchParams();
       params.append('username', username);
       params.append('password', password);
@@ -48,7 +40,7 @@ export default function LoginPage() {
         },
       });
 
-      // If backend responds with redirectUrl JSON, follow it. Otherwise fallback to /listings.
+     
       const redirectUrl = response.data?.redirectUrl;
       if (redirectUrl) {
         await login();
@@ -60,7 +52,7 @@ export default function LoginPage() {
       navigate('/listings');
     } catch (err) {
       console.error('Login error details:', err);
-      // Backend usually redirects on failure; Axios may surface that as an error.
+     
       const msg = err?.response?.data?.message || err?.message || 'Invalid username or password.';
       setErrorMsg(msg);
     } finally {

@@ -60,5 +60,5 @@ await Review.deleteMany({_id:{$in:listing.reviews}});
 
 
 
-const Listing=mongoose.model("Listing",listingSchema);  //const Listing = js variable , Listing inside() = mongoose model name
+const Listing=mongoose.model("Listing",listingSchema);  
 module.exports=Listing;

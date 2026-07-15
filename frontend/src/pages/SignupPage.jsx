@@ -29,7 +29,7 @@ export default function SignupPage() {
     setSubmitting(true);
 
     try {
-      // Send registration credentials as urlencoded payload
+      
       const params = new URLSearchParams();
       params.append('username', username);
       params.append('email', email);
@@ -41,7 +41,7 @@ export default function SignupPage() {
         },
       });
 
-      // If backend responds with redirectUrl JSON, follow it. Otherwise fallback to /listings.
+      
       const redirectUrl = response.data?.redirectUrl;
       if (redirectUrl) {
         await login();
@@ -49,7 +49,7 @@ export default function SignupPage() {
         return;
       }
 
-      // Successful signup & automatic login: best-effort update UI.
+     
       await login();
       navigate('/listings');
     } catch (err) {

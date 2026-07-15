@@ -32,14 +32,7 @@ color:#222222;
 text-decoration: underline;
 }
 
-/* .f-info-links ,.f-info-socials,.f-info-brand{
-    width:100%;
-    /* vertical-align:middle; */
-    /* display:flex;
-    align-items:center;
-    justify-content:center;
-    
-} */ */
+
 
 
 .f-info-socials i{
@@ -48,34 +41,24 @@ text-decoration: underline;
     
 }
 
-/* .f-info{
-    align-items:center;
-    text-align:center;
-    display:flex;
-    height:8rem;
-    background-color:#ebebeb;
-    flex-wrap:wrap;
-    justify-content:center;
-    align-items:space-evenly;
-    flex-direction: column;
-} */
+
  .f-info {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    height: 8rem; /* Keeps your exact original size */
+    height: 8rem; 
     background-color: #ebebeb;
 }
 
 .f-info-links {
     display: flex;
-    flex-direction: row; /* Forces them to stay on the same line */
+    flex-direction: row; 
     justify-content: center;
     align-items: center;
-    gap: 1.5rem; /* Puts a clean space right between the two links */
-    width: auto; /* Prevents it from taking up the full width block */
+    gap: 1.5rem; 
+    width: auto; 
 }
 .listing-cards{
     border:none !important;

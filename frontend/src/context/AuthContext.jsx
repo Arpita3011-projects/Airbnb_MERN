@@ -23,8 +23,7 @@ export function AuthProvider({ children }) {
     fetchCurrentUser();
   }, [fetchCurrentUser]);
 
-  // UI login: backend session is created by /login POST.
-  // After that, we re-fetch session user.
+  
   const login = async () => {
     await fetchCurrentUser();
   };

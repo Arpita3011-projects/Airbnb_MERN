@@ -6,7 +6,7 @@ export default function RequireAuth({ children }) {
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  // While we check auth state (bootstrap), avoid flashing redirects.
+  
   if (loading) return null;
 
   if (!user) {

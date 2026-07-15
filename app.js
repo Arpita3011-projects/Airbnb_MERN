@@ -3,8 +3,8 @@ require('dotenv').config();
 }
 
 const express = require("express");
-const app = express(); //creating server using express
-const mongoose = require("mongoose"); //connects mongodb with node.js
+const app = express(); 
+const mongoose = require("mongoose"); 
 const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override");
@@ -24,7 +24,7 @@ const flash = require("connect-flash");
 
 const {MongoStore}=require('connect-mongo');
 
-// Mongo-backed session store (Atlas)
+
 const store = MongoStore.create({
     mongoUrl: process.env.ATLASDB_URL,
     touchAfter:24 *60*60,
@@ -61,10 +61,10 @@ async function main() {
 
 
 
-// Production-friendly settings (Render/Proxy)
+
 app.set('trust proxy', 1);
 
-// CORS for React frontend (credentials needed for sessions)
+
 const cors = require('cors');
 app.use(cors({
     origin: process.env.FRONTEND_ORIGIN,
@@ -73,10 +73,10 @@ app.use(cors({
 
 
 
-app.use(express.urlencoded({ extended: true })); //to parse the form data from the request body
-app.use(methodOverride("_method")); //to use method override in our app and we are using _method as the query string to override the method, it chceks if there is method in form tag , if there is no method in the form then it will use the method in the query string
+app.use(express.urlencoded({ extended: true })); 
+app.use(methodOverride("_method")); 
 
-app.use(express.static(path.join(__dirname, "public"))); //to serve static files from the public directory and we are using path.join to join the current directory with the public directory and it will give us the absolute path of the public directory and we are using express.static to serve the static files from the public directory
+app.use(express.static(path.join(__dirname, "public")));  
 
 
 
@@ -101,16 +101,14 @@ app.use(session(sessionOptions));
 app.use(flash());
 
 app.use(passport.initialize());
-app.use(passport.session()); //lets website know that same user is navigating to different pages
-passport.use(new localStrategy(User.authenticate())); //all users should be autheticated through local strategy, uses .aurthenticate() method
-
-passport.serializeUser(User.serializeUser()); //store userinfo into the session
-passport.deserializeUser(User.deserializeUser()); //unstore userinfo after session ends
+app.use(passport.session()); 
+passport.use(new localStrategy(User.authenticate())); 
+passport.serializeUser(User.serializeUser()); 
+passport.deserializeUser(User.deserializeUser()); 
 
 
 
 app.use((req, res, next) => {
-    // Keep flash/session values for auth flows that rely on redirects.
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     res.locals.currUser = req.user;
@@ -145,7 +143,7 @@ app.get("/me", (req, res) => {
 
 
 
-app.use((req,res,next) => {//this middleware will match all the routes that are not defined above and it will throw an error with status code 404 and message "Page Not Found" and it will pass the error to the next middleware which is the error handling middleware
+app.use((req,res,next) => {
     next(new ExpressError(404, "Page Not Found"))
 });
 

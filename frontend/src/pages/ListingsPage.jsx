@@ -12,7 +12,7 @@ export default function ListingsPage() {
     const fetchListings = async () => {
       try {
         const response = await api.get('/listings');
-        // Backend returns listings in the allListings property or as direct response data
+        
         const data = response.data.allListings || response.data;
         if (Array.isArray(data)) {
           setListings(data);
@@ -75,7 +75,7 @@ export default function ListingsPage() {
         }
       `}</style>
 
-      {/* Filters Section */}
+     
       <div id="filters">
         <div className="filter">
           <div><i className="fa-solid fa-fire"></i></div>
@@ -150,7 +150,7 @@ export default function ListingsPage() {
         </div>
       </div>
 
-      {/* Listings Grid */}
+     
       {loading ? (
         <div className="text-center mt-5">
           <div className="spinner-border text-danger" role="status">

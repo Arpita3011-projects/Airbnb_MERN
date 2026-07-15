@@ -1,4 +1,4 @@
-/* --- Global Styles --- */
+
 body {
   font-family: "Plus Jakarta Sans", sans-serif !important;
   font-optical-sizing: auto;
@@ -18,7 +18,7 @@ body {
   flex-direction: column;
 }
 
-/* --- Style CSS from Project --- */
+
 .navbar {
   height: 5rem;
   background-color: white;
@@ -143,7 +143,7 @@ body {
   text-align: center;
 }
 
-/* --- Starability CSS from rating.css --- */
+
 .starability-result {
   position: relative;
   width: 150px;

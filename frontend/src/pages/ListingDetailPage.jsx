@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import {useState, useEffect, useRef} from 'react';
+import {useParams, Link, useNavigate} from 'react-router-dom';
 import api from '../api/axios';
-import { useAuth } from '../context/AuthContext';
+import {useAuth} from '../context/AuthContext';
 import ReviewsSection from '../components/ReviewsSection';
 
 
@@ -171,7 +171,7 @@ export default function ListingDetailPage() {
 
       <hr className="col-6 offset-3 my-4" />
 
-      {/* Render ReviewsSection */}
+      
       <ReviewsSection
         listingId={listing._id}
         reviews={listing.reviews || []}

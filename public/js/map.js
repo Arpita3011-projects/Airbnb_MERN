@@ -1,4 +1,4 @@
-// This script runs on the client-side to render the map for a listing
+
 
 window.addEventListener('load',() => {
     if (typeof L==='undefined') {
